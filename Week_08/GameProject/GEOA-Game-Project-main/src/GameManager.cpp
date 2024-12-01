@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "Player.h"
+#include "PlayerInputComponent.h"
 
 GameManager::GameManager()
 {
@@ -17,13 +18,16 @@ void GameManager::Init()
 	auto pBody{ std::make_unique<BodyComponent>(m_Player.get(),ThreeBlade{100,100,10})};
 	auto pRenderer{ std::make_unique<RenderComponent>(m_Player.get(),pBody.get())};
 
-	pBody->Velocity = OneBlade{ 10,1,0,0 };
+	auto pPlayerInput{ std::make_unique<PlayerInputComponent>(pBody.get()) };
+	pBody->Velocity = OneBlade{ 100,.5,.5,0 };
 
 	m_pComponents.emplace_back(pBody.get());
 	m_pComponents.emplace_back(pRenderer.get());
+	m_pComponents.emplace_back(pPlayerInput.get());
 
 	m_Player->AddComponent(std::move(pBody));
 	m_Player->AddComponent(std::move(pRenderer));
+	m_Player->AddComponent(std::move(pPlayerInput));
 }
 
 void GameManager::Start()

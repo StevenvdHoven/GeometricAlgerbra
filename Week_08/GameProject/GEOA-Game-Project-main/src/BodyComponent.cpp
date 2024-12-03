@@ -10,15 +10,10 @@ void BodyComponent::Update(float elaspedSec)
 {
 	if (Velocity.Norm() > 0)
 	{
-		OneBlade m{ Velocity };
-		m[0] = 0;
+		OneBlade direction{ Velocity };
+		direction[0] = direction[0] * elaspedSec;
 
-		OneBlade n{ Velocity };
-		n[0] = n[0] * elaspedSec;
-
-		Motor R = n * m;
-		auto result = R * Position * ~R;
-		Position = result.Grade3();
+		Move(direction);
 	}
 }
 
@@ -28,4 +23,16 @@ void BodyComponent::Draw() const
 
 	const Point2f pos{ ThreeBlade::ToPoint2f(Position) };
 	utils::DrawPoint(pos, 10);
+}
+
+void BodyComponent::Move(const OneBlade direction)
+{
+	OneBlade m{ direction };
+	m[0] = 0;
+
+	OneBlade n{ direction };
+
+	Motor R = n * m;
+	auto result = R * Position * ~R;
+	Position = result.Grade3();
 }

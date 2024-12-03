@@ -23,4 +23,6 @@ private:
 	float m_Angle;
 	Motor m_RotationMotor;
 	OneBlade m_TempVelocity;
+	TwoBlade m_RotationLine;
+	ThreeBlade m_StartRotationPosition;
 };

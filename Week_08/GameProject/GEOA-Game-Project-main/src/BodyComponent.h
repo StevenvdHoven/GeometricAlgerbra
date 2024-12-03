@@ -13,4 +13,6 @@ public:
 	virtual void Update(float elaspedSec) override;
 
 	virtual void Draw() const override;
+
+	void Move(const OneBlade direction);
 };

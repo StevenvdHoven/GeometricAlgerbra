@@ -8,10 +8,10 @@ BodyComponent::BodyComponent(GameObject* pOwner,const ThreeBlade& pos):
 
 void BodyComponent::Update(float elaspedSec)
 {
-	if (Velocity.Norm() > 0)
+	if (Velocity.VNorm() > 0)
 	{
-		OneBlade direction{ Velocity };
-		direction[0] = direction[0] * elaspedSec;
+		TwoBlade direction{ Velocity };
+		direction *= elaspedSec;
 
 		Move(direction);
 	}
@@ -19,10 +19,13 @@ void BodyComponent::Update(float elaspedSec)
 
 void BodyComponent::Draw() const
 {
-	utils::SetColor(color_green);
+	
+}
 
-	const Point2f pos{ ThreeBlade::ToPoint2f(Position) };
-	utils::DrawPoint(pos, 10);
+void BodyComponent::Move(const TwoBlade direction)
+{
+	auto translater{ Motor::Translation(direction.VNorm(),direction)};
+	Position = (translater * Position * ~translater).Grade3();
 }
 
 void BodyComponent::Move(const OneBlade direction)
@@ -32,7 +35,6 @@ void BodyComponent::Move(const OneBlade direction)
 
 	OneBlade n{ direction };
 
-	Motor R = n * m;
-	auto result = R * Position * ~R;
-	Position = result.Grade3();
+	auto R{ n * m };
+	Position = (R * Position * ~R).Grade3();
 }

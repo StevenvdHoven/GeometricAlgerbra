@@ -16,13 +16,16 @@ public:
 	void Update(float elapsedSec) override;
 	void Draw() const override;
 private:
+	static ThreeBlade GetWorldSpaceMouse(ThreeBlade position);
+
 	BodyComponent* m_pBody;
 	ThreeBlade m_PlayerMousePosition;
 
 	bool m_Swing;
 	float m_Angle;
+	float m_AngleTimer;
 	Motor m_RotationMotor;
-	OneBlade m_TempVelocity;
+	TwoBlade m_TempVelocity;
 	TwoBlade m_RotationLine;
 	ThreeBlade m_StartRotationPosition;
 };

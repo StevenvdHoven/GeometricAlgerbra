@@ -15,11 +15,11 @@ void GameManager::Init()
 {
 	m_Player = std::make_unique<Player>();
 	
-	auto pBody{ std::make_unique<BodyComponent>(m_Player.get(),ThreeBlade{100,100,10})};
+	auto pBody{ std::make_unique<BodyComponent>(m_Player.get(),ThreeBlade{100,100,0})};
 	auto pRenderer{ std::make_unique<RenderComponent>(m_Player.get(),pBody.get())};
 
 	auto pPlayerInput{ std::make_unique<PlayerInputComponent>(pBody.get()) };
-	pBody->Velocity = OneBlade{ 100,.5,.5,0 };
+	pBody->Velocity = TwoBlade{ 100,0,0,0,0,0 };
 
 	m_pComponents.emplace_back(pBody.get());
 	m_pComponents.emplace_back(pRenderer.get());

@@ -6,7 +6,7 @@ class BodyComponent : public Component
 {
 public: 
 	ThreeBlade Position;
-	OneBlade Velocity;
+	TwoBlade Velocity;
 
 	BodyComponent(GameObject* pOwner, const ThreeBlade& pos);
 
@@ -14,5 +14,6 @@ public:
 
 	virtual void Draw() const override;
 
+	void Move(const TwoBlade direction);
 	void Move(const OneBlade direction);
 };

@@ -61,7 +61,6 @@ void PlayerInputComponent::Update(float elapsedSec)
 		auto mousePosition{ GetWorldSpaceMouse(m_PlayerMousePosition) }; // Convert Screenspace to World space
 		auto relativePosition{ m_StartRotationPosition - mousePosition }; // Get Relative from mousePosition
 
-		Point2f mousePos{ ThreeBlade::ToPoint2f(mousePosition) };
 		float mousePosNorm{ mousePosition.VNorm() };
 
 		TwoBlade translationToMouse{ mousePosition[0], mousePosition[1],0,0,0,0};

@@ -3,6 +3,9 @@
 #include <iostream>
 #include <vector>
 
+class Collider;
+struct Collision;
+
 class GameObject
 {
 
@@ -11,7 +14,7 @@ public:
 	virtual ~GameObject();
 
 	void AddComponent(std::unique_ptr<Component>&& pComponent);
-
+	virtual void OnCollision(Collider* other, const Collision& collision);
 
 	template<typename ComponentType>
 	void RemoveComponent();

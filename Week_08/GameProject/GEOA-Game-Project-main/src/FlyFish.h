@@ -466,6 +466,8 @@ public:
             );
     }
 
+    [[nodiscard]] static TwoBlade LineFromPoints(const ThreeBlade& first, const ThreeBlade& second);
+
     TwoBlade& Normalize()
     {
         return (*this) /= Norm();

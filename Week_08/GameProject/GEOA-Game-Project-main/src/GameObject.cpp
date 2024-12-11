@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Component.h"
+#include "Collider.h"
 
 GameObject::GameObject()
 {
@@ -14,4 +15,12 @@ void GameObject::AddComponent(std::unique_ptr<Component>&& pComponent)
 {
 	pComponent->SetOwner(this);
 	m_Components.emplace_back(std::move(pComponent));
+}
+
+void GameObject::OnCollision(Collider* other, const Collision& collision)
+{
+	for (auto& component : m_Components)
+	{
+		component->OnCollision(other, collision);
+	}
 }

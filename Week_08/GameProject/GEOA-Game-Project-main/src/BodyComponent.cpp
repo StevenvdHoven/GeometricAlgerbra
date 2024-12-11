@@ -1,8 +1,8 @@
 #include "BodyComponent.h"
 #include "utils.h"
 
-BodyComponent::BodyComponent(GameObject* pOwner,const ThreeBlade& pos):
-	Component(pOwner), Position{pos}, Velocity{}
+BodyComponent::BodyComponent(const ThreeBlade& pos):
+	Position{pos}, Velocity{}
 {
 }
 
@@ -22,13 +22,13 @@ void BodyComponent::Draw() const
 	
 }
 
-void BodyComponent::Move(const TwoBlade direction)
+void BodyComponent::Move(const TwoBlade& direction)
 {
 	auto translater{ Motor::Translation(direction.VNorm(),direction)};
 	Position = (translater * Position * ~translater).Grade3();
 }
 
-void BodyComponent::Move(const OneBlade direction)
+void BodyComponent::Move(const OneBlade& direction)
 {
 	OneBlade m{ direction };
 	m[0] = 0;

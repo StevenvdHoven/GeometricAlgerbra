@@ -2,6 +2,8 @@
 #include <vector>
 #include "structs.h"
 
+#define WIDTH 1280.f
+#define HEIGHT 720.f
 
 namespace utils
 {

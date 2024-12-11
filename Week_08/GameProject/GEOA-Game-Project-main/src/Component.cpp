@@ -1,5 +1,6 @@
 #include "Component.h"
 #include "GameObject.h"
+#include "Collider.h"
 
 
 
@@ -41,7 +42,16 @@ void Component::ProcessMouseUpEvent(const SDL_MouseButtonEvent& e)
 {
 }
 
+void Component::OnCollision(Collider* other, const Collision& collision)
+{
+}
+
 void Component::SetOwner(GameObject* pOwner)
 {
 	m_pOwner = pOwner;
+}
+
+GameObject* Component::GetOwner()
+{
+	return m_pOwner;
 }

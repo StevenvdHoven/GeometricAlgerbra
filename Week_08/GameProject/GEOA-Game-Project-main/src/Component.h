@@ -4,6 +4,9 @@
 #include <SDL_opengl.h>
 #include <SDL_ttf.h>
 
+struct Collision;
+
+class Collider;
 class GameObject;
 
 class Component
@@ -27,7 +30,11 @@ public:
 	virtual void ProcessMouseDownEvent(const SDL_MouseButtonEvent& e);
 	virtual void ProcessMouseUpEvent(const SDL_MouseButtonEvent& e);
 
+	virtual void OnCollision(Collider* other, const Collision& collision);
+
+
 	void SetOwner(GameObject* pOwner);
+	GameObject* GetOwner();
 protected:
 	GameObject* m_pOwner;
 };

@@ -8,12 +8,12 @@ public:
 	ThreeBlade Position;
 	TwoBlade Velocity;
 
-	BodyComponent(GameObject* pOwner, const ThreeBlade& pos);
+	BodyComponent(const ThreeBlade& pos);
 
 	virtual void Update(float elaspedSec) override;
 
 	virtual void Draw() const override;
 
-	void Move(const TwoBlade direction);
-	void Move(const OneBlade direction);
+	void Move(const TwoBlade& direction);
+	void Move(const OneBlade& direction);
 };

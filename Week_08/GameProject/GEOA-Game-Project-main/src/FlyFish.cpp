@@ -333,6 +333,10 @@ MultiVector& MultiVector::operator=(Motor&& b) noexcept
     res[15] = 0;
     return res;
 }
+TwoBlade TwoBlade::LineFromPoints(const ThreeBlade& first, const ThreeBlade& second)
+{
+    return LineFromPoints(first[0], first[1], first[2], second[0], second[1], second[2]);
+}
 // TwoBlade
 [[nodiscard]] MultiVector TwoBlade::operator* (const MultiVector& b) const {
     MultiVector res{};

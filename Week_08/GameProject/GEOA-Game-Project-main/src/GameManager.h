@@ -10,7 +10,9 @@
 #include "FlyFish.h"
 #include <vector>
 
-class Player;
+#include "Collider.h"
+#include "Player.h"
+#include "PlayerInputComponent.h"
 class Component;
 
 class GameManager
@@ -33,7 +35,10 @@ public:
 	
 
 private:
+	void UpdateCollisions(float elapsedSec);
+
 	std::unique_ptr<Player> m_Player;
 
 	std::vector<Component*> m_pComponents;
+	std::vector<Collider*> m_pColliders;
 };

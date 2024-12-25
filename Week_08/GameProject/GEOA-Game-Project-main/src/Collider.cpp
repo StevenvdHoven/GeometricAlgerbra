@@ -10,12 +10,16 @@ Collider::Collider(BodyComponent* pBody, float radius) noexcept:
 
 void Collider::Draw() const
 {
+	const float hRadius{ m_Radius * 0.5f };
+
 	Point2f pos{ ThreeBlade::ToPoint2f(m_pBody->Position) };
-	pos.x += WIDTH * 0.5f - 5;
-	pos.y += HEIGHT * 0.5f - 5;
-	Ellipsef circle{ pos,10,10 };
+	pos.x += WIDTH * 0.5f - hRadius;
+	pos.y += HEIGHT * 0.5f - hRadius;
+	Ellipsef circle{ pos,m_Radius,m_Radius };
 	utils::SetColor(color_green);
 	utils::DrawEllipse(circle);
+
+	utils::DrawPoint(pos.x, pos.y, 1);
 }
 
 bool Collider::Collide(Collider* other, Collision& collision)
@@ -26,7 +30,7 @@ bool Collider::Collide(Collider* other, Collision& collision)
 	const TwoBlade lineBetweenPoints{ TwoBlade::LineFromPoints(position,otherPosition)};
 	const float totalRadius{ m_Radius + other->GetRadius() };
 
-	const float distance{ lineBetweenPoints.VNorm() };
+	const float distance{ lineBetweenPoints.Norm() };
 
 	const bool collided{ distance <= totalRadius };
 	collision.collided = collided;

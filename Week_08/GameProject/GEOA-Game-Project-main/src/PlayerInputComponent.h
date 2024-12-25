@@ -32,6 +32,7 @@ private:
 	float m_Angle;
 	float m_AngleTimer;
 	float m_VelocityForce;
+	float m_BuildUpEnergy;
 
 	TwoBlade m_RotationLine;
 	ThreeBlade m_StartRotationPosition;

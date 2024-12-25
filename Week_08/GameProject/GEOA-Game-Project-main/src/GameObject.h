@@ -26,6 +26,8 @@ public:
 	template<typename ComponentType>
 	bool HasComponent();
 
+	std::vector<Component*> GetComponents() const;
+
 
 private:
 	std::vector<std::unique_ptr<Component>> m_Components;
@@ -50,7 +52,7 @@ inline ComponentType* GameObject::GetComponent()
 {
 	for (auto& pComponent : m_Components)
 	{
-		ComponentType* type{ dynamic_cast<ComponentType>(pComponent.get()) };
+		ComponentType* type{ dynamic_cast<ComponentType*>(pComponent.get()) };
 		if (type != nullptr) return type;
 	}
 	return nullptr;

@@ -1,38 +1,27 @@
 #include "GameManager.h"
+#include "EnemyManager.h"
+#include "Enemy.h"
 
 
 GameManager::GameManager()
 {
+	m_pEnemyManager = std::make_unique<EnemyManager>(this, 1280.f, 720.f);
 }
 
 GameManager::~GameManager()
 {
-	m_Player.release();
+	m_pEnemyManager.release();
+	m_pGameObjects.clear();
+	m_pComponents.clear();
+	m_pColliders.clear();
 }
 
 void GameManager::Init()
 {
-	m_Player = std::make_unique<Player>();
+	auto pPlayer = std::make_unique<Player>();
 	
-	auto pBody{ std::make_unique<BodyComponent>(ThreeBlade{100,100,0})};
-	auto pRenderer{ std::make_unique<RenderComponent>(pBody.get(),Color4f{0,0,1,1},10) };
 
-	auto pPlayerInput{ std::make_unique<PlayerInputComponent>(pBody.get()) };
-	pBody->Velocity = TwoBlade{ 100,0,0,0,0,0 };
-
-	auto pPlayerCollider{ std::make_unique<Collider>(pBody.get(),10) };
-
-	m_pComponents.emplace_back(pBody.get());
-	m_pComponents.emplace_back(pRenderer.get());
-	m_pComponents.emplace_back(pPlayerInput.get());
-	m_pComponents.emplace_back(pPlayerCollider.get());
-
-	m_pColliders.emplace_back(pPlayerCollider.get());
-
-	m_Player->AddComponent(std::move(pBody));
-	m_Player->AddComponent(std::move(pRenderer));
-	m_Player->AddComponent(std::move(pPlayerInput));
-	m_Player->AddComponent(std::move(pPlayerCollider));
+	AddGameObject(std::move(pPlayer));
 }
 
 void GameManager::Start()
@@ -41,10 +30,14 @@ void GameManager::Start()
 
 void GameManager::Update(float elaspedSec)
 {
+	m_pEnemyManager->Update(elaspedSec);
+	
 	for (auto pComponent : m_pComponents)
 	{
 		pComponent->Update(elaspedSec);
 	}
+
+	CheckDestroyedGameObjects();
 
 	UpdateCollisions(elaspedSec);
 }
@@ -115,10 +108,88 @@ void GameManager::UpdateCollisions(float elapsedSec)
 			if (collider->Collide(other, collision))
 			{
 				collider->Reflect(collision.normal);
-				collider->GetOwner()->OnCollision(NULL, collision);
+				collider->GetOwner()->OnCollision(other, collision);
+
+				auto pBody{ collider->GetOwner()->GetComponent<BodyComponent>() };
+				pBody->Update(elapsedSec);
 			}
 		}
 	}
+}
+
+void GameManager::CheckDestroyedGameObjects()
+{
+	for (auto gameObjectPtr : m_pGameObjectDestroyed)
+	{
+		EraseGameObject(gameObjectPtr);
+	}
+	m_pGameObjectDestroyed.clear();
+}
+
+void GameManager::EraseGameObject(GameObject* pGameObject)
+{
+	int length{ static_cast<int>(m_pGameObjects.size()) };
+	for (int index{ 0 }; index < length; ++index)
+	{
+		if (m_pGameObjects[index].get() == pGameObject)
+		{
+			auto pComponents{ pGameObject->GetComponents() };
+			for (auto pComponent : pComponents)
+			{
+				EraseComponent(pComponent);
+			}
+
+			m_pGameObjects[index].release();
+			m_pGameObjects.erase(m_pGameObjects.begin() + index);
+			return;
+		}
+	}
+}
+
+void GameManager::EraseComponent(Component* pComponent)
+{
+	for (int index{ 0 }; index < m_pColliders.size(); ++index)
+	{
+		if (m_pColliders[index] == pComponent)
+		{
+			m_pColliders.erase(m_pColliders.begin() + index);
+			break;
+		}
+	}
+
+	int length{ static_cast<int>(m_pComponents.size()) };
+	for (int index{ 0 }; index < length; ++index)
+	{
+		if (m_pComponents[index] == pComponent)
+		{
+			m_pComponents.erase(m_pComponents.begin() + index);
+			break;
+		}		
+	}
+}
+
+void GameManager::AddGameObject(std::unique_ptr<GameObject>&& pGameObject)
+{
+	
+	auto components{ pGameObject->GetComponents() };
+	for (auto& component : components)
+	{	
+		component->SetManager(this);
+		m_pComponents.emplace_back(component);
+	}
+
+	Collider* collider{ pGameObject->GetComponent<Collider>() };
+	if (collider != nullptr)
+	{
+		m_pColliders.emplace_back(collider);
+	}
+	m_pGameObjects.emplace_back(std::move(pGameObject));
+	
+}
+
+void GameManager::RemoveGameObject(GameObject* pGameObject)
+{
+	m_pGameObjectDestroyed.emplace_back(pGameObject);
 }
 
 

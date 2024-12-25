@@ -14,6 +14,7 @@
 #include "Player.h"
 #include "PlayerInputComponent.h"
 class Component;
+class EnemyManager;
 
 class GameManager
 {
@@ -31,13 +32,20 @@ public:
 	void ProcessMouseMotionEvent(const SDL_MouseMotionEvent& e);
 	void ProcessMouseDownEvent(const SDL_MouseButtonEvent& e);
 	void ProcessMouseUpEvent(const SDL_MouseButtonEvent& e);
-
 	
+	void AddGameObject(std::unique_ptr<GameObject>&& pGameObject);
+	void RemoveGameObject(GameObject* pGameObject);
 
 private:
 	void UpdateCollisions(float elapsedSec);
+	void CheckDestroyedGameObjects();
+	void EraseGameObject(GameObject* pGameObject);
+	void EraseComponent(Component* pComponent);
 
-	std::unique_ptr<Player> m_Player;
+	std::unique_ptr<EnemyManager> m_pEnemyManager;
+	
+	std::vector<std::unique_ptr<GameObject>> m_pGameObjects;
+	std::vector<GameObject*> m_pGameObjectDestroyed;
 
 	std::vector<Component*> m_pComponents;
 	std::vector<Collider*> m_pColliders;

@@ -11,10 +11,12 @@ RenderComponent::RenderComponent(BodyComponent* pBody,const Color4f& color, floa
 
 void RenderComponent::Draw() const
 {
+	const float hRadius{ m_Radius * 0.5f };
+
 	Point2f pos{ ThreeBlade::ToPoint2f(m_pBody->Position) };
-	pos.x += WIDTH * 0.5f - 5;
-	pos.y += HEIGHT * 0.5f - 5;
-	Ellipsef circle{pos,10,10 };
+	pos.x += WIDTH * 0.5f - hRadius;
+	pos.y += HEIGHT * 0.5f - hRadius;
+	Ellipsef circle{pos,m_Radius, m_Radius };
 	utils::SetColor(m_Color);
 	utils::FillEllipse(circle);
 }

@@ -2,6 +2,8 @@
 #include "BodyComponent.h"
 #include "utils.h"
 #include "Collider.h"
+#include "GameObject.h"
+#include "EnemyComponent.h"
 
 PlayerInputComponent::PlayerInputComponent(BodyComponent* pBody):
 	m_pBody{ pBody },
@@ -35,6 +37,7 @@ void PlayerInputComponent::ProcessMouseDownEvent(const SDL_MouseButtonEvent& e)
 		m_StartRotationPosition = m_pBody->Position;
 
 		m_RotationLine = OneBlade{ 0,1,0,0 } ^ OneBlade{ 0,0,1,0 };
+		m_BuildUpEnergy = 0;
 		
 	}
 }
@@ -53,7 +56,11 @@ void PlayerInputComponent::ProcessMouseUpEvent(const SDL_MouseButtonEvent& e)
 		yDir /= magnituded;
 
 		TwoBlade velocity{ xDir,yDir,0,0,0,0 };
-		m_pBody->Velocity = velocity * m_VelocityForce;
+
+		float maxedForce{ std::min(m_VelocityForce * (1 + m_BuildUpEnergy),250.f) };
+		m_pBody->Velocity = velocity * maxedForce;
+
+		std::cout << "released force " << maxedForce << std::endl;
 	}
 }
 
@@ -61,8 +68,11 @@ void PlayerInputComponent::Update(float elapsedSec)
 {
 	if (m_Swing)
 	{
+		if(m_BuildUpEnergy <= 1) m_BuildUpEnergy += elapsedSec;
+		
+		
 		// Update the angle
-		m_Angle += m_Direction * elapsedSec * 90;
+		m_Angle += m_Direction * (1 + m_BuildUpEnergy) * elapsedSec * 90;
 
 		m_PreviousPosition = m_pBody->Position;
 
@@ -107,6 +117,18 @@ void PlayerInputComponent::OnCollision(Collider* other, const Collision& collisi
 	if (m_Swing)
 	{
 		m_Direction *= -1;
+	}
+	else if(other != nullptr)
+	{
+		auto pGameObject{ other->GetOwner() };
+		if (pGameObject == nullptr) return;
+
+
+		auto enemy{ pGameObject->GetComponent<EnemyComponent>()};
+		if (enemy != nullptr)
+		{
+			enemy->TakeDamage(1);
+		}
 	}
 }
 

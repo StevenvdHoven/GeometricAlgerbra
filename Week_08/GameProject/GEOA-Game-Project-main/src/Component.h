@@ -8,6 +8,7 @@ struct Collision;
 
 class Collider;
 class GameObject;
+class GameManager;
 
 class Component
 {
@@ -32,9 +33,11 @@ public:
 
 	virtual void OnCollision(Collider* other, const Collision& collision);
 
-
+	void SetManager(GameManager* gameManager);
 	void SetOwner(GameObject* pOwner);
+	void Destroy(GameObject* gameObject);
 	GameObject* GetOwner();
 protected:
 	GameObject* m_pOwner;
+	GameManager* m_pGameManager;
 };

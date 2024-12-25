@@ -1,6 +1,7 @@
 #include "Component.h"
 #include "GameObject.h"
 #include "Collider.h"
+#include "GameManager.h"
 
 
 
@@ -46,9 +47,19 @@ void Component::OnCollision(Collider* other, const Collision& collision)
 {
 }
 
+void Component::SetManager(GameManager* gameManager)
+{
+	m_pGameManager = gameManager;
+}
+
 void Component::SetOwner(GameObject* pOwner)
 {
 	m_pOwner = pOwner;
+}
+
+void Component::Destroy(GameObject* gameObject)
+{
+	m_pGameManager->RemoveGameObject(gameObject);
 }
 
 GameObject* Component::GetOwner()

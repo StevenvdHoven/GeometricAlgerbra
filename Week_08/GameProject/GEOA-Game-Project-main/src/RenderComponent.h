@@ -11,6 +11,8 @@ public:
 
 	virtual void Draw() const;
 
+	void SetColor(const Color4f& color);
+
 private:
 
 	BodyComponent* m_pBody;

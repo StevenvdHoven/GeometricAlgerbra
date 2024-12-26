@@ -20,3 +20,8 @@ void RenderComponent::Draw() const
 	utils::SetColor(m_Color);
 	utils::FillEllipse(circle);
 }
+
+void RenderComponent::SetColor(const Color4f& color)
+{
+	m_Color = color;
+}

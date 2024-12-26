@@ -20,8 +20,8 @@ public:
 
 	void Reflect(const OneBlade& normal);
 
-	ThreeBlade GetPosition();
-	float GetRadius();
+	ThreeBlade GetPosition() const;
+	float GetRadius() const;
 
 private:
 	float m_Radius;

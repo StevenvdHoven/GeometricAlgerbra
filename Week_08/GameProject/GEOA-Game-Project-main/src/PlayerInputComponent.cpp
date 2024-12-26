@@ -1,14 +1,19 @@
 #include "PlayerInputComponent.h"
 #include "BodyComponent.h"
+#include "RenderComponent.h"
 #include "utils.h"
 #include "Collider.h"
 #include "GameObject.h"
 #include "EnemyComponent.h"
+#include <cmath>
+#include <algorithm>
 
-PlayerInputComponent::PlayerInputComponent(BodyComponent* pBody):
+PlayerInputComponent::PlayerInputComponent(BodyComponent* pBody, RenderComponent* pRenderer):
 	m_pBody{ pBody },
+	m_pRenderer{ pRenderer },
 	m_PlayerMousePosition{},
 	m_Swing{false},
+	m_RotationSpeed{0},
 	m_Direction{1},
 	m_Angle{0},
 	m_VelocityForce{}
@@ -38,7 +43,15 @@ void PlayerInputComponent::ProcessMouseDownEvent(const SDL_MouseButtonEvent& e)
 
 		m_RotationLine = OneBlade{ 0,1,0,0 } ^ OneBlade{ 0,0,1,0 };
 		m_BuildUpEnergy = 0;
+
+		auto playerPos{ m_pBody->Position };
+		auto mousePosition{ GetWorldSpaceMouse(m_PlayerMousePosition) };
+
+		playerPos[2] = 0;
+		mousePosition[2] = 0;
+		auto dir{ TwoBlade::LineFromPoints(playerPos,mousePosition) };
 		
+		CaculateRotationSpeed(dir.Norm());
 	}
 }
 
@@ -72,7 +85,7 @@ void PlayerInputComponent::Update(float elapsedSec)
 		
 		
 		// Update the angle
-		m_Angle += m_Direction * (1 + m_BuildUpEnergy) * elapsedSec * 90;
+		m_Angle += m_Direction * m_RotationSpeed * (1 + m_BuildUpEnergy) * elapsedSec * 90;
 
 		m_PreviousPosition = m_pBody->Position;
 
@@ -83,7 +96,9 @@ void PlayerInputComponent::Update(float elapsedSec)
 
 		float mousePosNorm{ mousePosition.VNorm() };
 
-		TwoBlade translationToMouse{ mousePosition[0], mousePosition[1],0,0,0,0};
+		
+
+		TwoBlade translationToMouse{ mousePosition[0], mousePosition[1],255 * m_BuildUpEnergy,0,0,0};
 
 		auto translater{ Motor::Translation(translationToMouse.VNorm(),translationToMouse)};
 		auto rotor{ Motor::Rotation(m_Angle,m_RotationLine)};
@@ -95,6 +110,14 @@ void PlayerInputComponent::Update(float elapsedSec)
 		auto result{ position.Grade3() };
 		m_pBody->Position = result;
 	}
+	else
+	{
+		
+		m_pBody->Velocity[2] = -m_pBody->Position[2];
+		
+	}
+	m_pRenderer->SetColor(Color4f{ m_pBody->Position[2] / 255,1,0 ,1 });
+
 }
 
 void PlayerInputComponent::Draw() const
@@ -106,6 +129,10 @@ void PlayerInputComponent::Draw() const
 
 	utils::DrawLine(ThreeBlade::ToPoint2f(m_PlayerMousePosition), playerPos);
 	
+	const Ellipsef ellipse{ ThreeBlade::ToPoint2f(m_PlayerMousePosition) , 200,200 };
+	utils::DrawEllipse(ellipse);
+
+
 	utils::SetColor(color_blue);
 	utils::DrawPoint(ThreeBlade::ToPoint2f(m_PlayerMousePosition), 5.f);
 
@@ -118,7 +145,8 @@ void PlayerInputComponent::OnCollision(Collider* other, const Collision& collisi
 	{
 		m_Direction *= -1;
 	}
-	else if(other != nullptr)
+	
+	if(other != nullptr)
 	{
 		auto pGameObject{ other->GetOwner() };
 		if (pGameObject == nullptr) return;
@@ -183,4 +211,29 @@ void PlayerInputComponent::CaculateDirection(const ThreeBlade& position, const T
 		else
 			m_Direction = velocityUp ? -1 : 1;
 	}
+}
+
+void PlayerInputComponent::CaculateRotationSpeed(float distance)
+{
+	const float startPercent = 0.1f;
+
+	const float maxDistance = 200.f;
+
+	// Clamp distance to ensure it's non-negative
+	distance = std::max(distance, 0.f);
+
+	if (distance <= maxDistance) {
+		// Linear interpolation within the maxDistance range
+		float normalizedDistance = distance / maxDistance;
+		m_RotationSpeed = startPercent + (1.f - normalizedDistance) * 4.f;
+	}
+	else {
+		// Exponential slowdown beyond maxDistance
+		float normalizedDistance = (distance - maxDistance) / maxDistance; // Normalize beyond maxDistance
+		m_RotationSpeed = startPercent + std::exp(-normalizedDistance) * 0.1f; // Adjust the multiplier (0.5f) for tuning
+	}
+
+	// Ensure rotation speed doesn't drop below a minimum
+	m_RotationSpeed = std::max(m_RotationSpeed, 0.01f);
+	std::cout << "rotation speed: " << m_RotationSpeed << " with distance: " << distance << std::endl;
 }

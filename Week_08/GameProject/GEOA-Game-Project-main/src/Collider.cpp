@@ -24,8 +24,11 @@ void Collider::Draw() const
 
 bool Collider::Collide(Collider* other, Collision& collision)
 {
-	const ThreeBlade& position{ m_pBody->Position };
-	const ThreeBlade& otherPosition{ other->GetPosition() };
+	ThreeBlade position{ m_pBody->Position };
+	position[2] = 0;
+
+	ThreeBlade otherPosition{ other->GetPosition() };
+	otherPosition[2] = 0;
 
 	const TwoBlade lineBetweenPoints{ TwoBlade::LineFromPoints(position,otherPosition)};
 	const float totalRadius{ m_Radius + other->GetRadius() };
@@ -83,12 +86,12 @@ void Collider::Reflect(const OneBlade& normal)
 	m_pBody->Velocity = (normal * velocity * ~normal).Grade2();
 }
 
-ThreeBlade Collider::GetPosition()
+ThreeBlade Collider::GetPosition() const
 {
 	return m_pBody->Position;
 }
 
-float Collider::GetRadius()
+float Collider::GetRadius() const
 {
 	return m_Radius;
 }

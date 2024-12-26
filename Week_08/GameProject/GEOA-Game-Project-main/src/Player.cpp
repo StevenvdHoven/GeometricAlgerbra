@@ -10,10 +10,7 @@ Player::Player()
 	pBody->Velocity = TwoBlade{ 100,0,0,0,0,0 };
 
 	auto pRenderer{ std::make_unique<RenderComponent>(pBody.get(),Color4f{0,0,1,1},10) };
-
-	auto pPlayerInput{ std::make_unique<PlayerInputComponent>(pBody.get()) };
-	
-
+	auto pPlayerInput{ std::make_unique<PlayerInputComponent>(pBody.get(),pRenderer.get()) };
 	auto pPlayerCollider{ std::make_unique<Collider>(pBody.get(),10) };
 
 	AddComponent(std::move(pBody));

@@ -83,7 +83,6 @@ void PlayerInputComponent::Update(float elapsedSec)
 	{
 		if(m_BuildUpEnergy <= 1) m_BuildUpEnergy += elapsedSec;
 		
-		
 		// Update the angle
 		m_Angle += m_Direction * m_RotationSpeed * (1 + m_BuildUpEnergy) * elapsedSec * 90;
 
@@ -95,8 +94,6 @@ void PlayerInputComponent::Update(float elapsedSec)
 		auto relativePosition{ m_StartRotationPosition - mousePosition }; // Get Relative from mousePosition
 
 		float mousePosNorm{ mousePosition.VNorm() };
-
-		
 
 		TwoBlade translationToMouse{ mousePosition[0], mousePosition[1],255 * m_BuildUpEnergy,0,0,0};
 
@@ -112,9 +109,7 @@ void PlayerInputComponent::Update(float elapsedSec)
 	}
 	else
 	{
-		
 		m_pBody->Velocity[2] = -m_pBody->Position[2];
-		
 	}
 	m_pRenderer->SetColor(Color4f{ m_pBody->Position[2] / 255,1,0 ,1 });
 
